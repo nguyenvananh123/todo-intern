@@ -28,18 +28,18 @@
     </ul>
     <div class="todoFooter">
       <div>
-        <p class="course" >Course {{selectedTodos}}</p>
-        <p>{{todoList.length}}</p>
-        <p></p>
+        <p class="course" >Course not completed {{ job }}</p>
+
       </div>
       <div>
-        <button class="btn_" @click="selectTodo">Get All</button>
-        <button class="btn_" @click="deleteAll">Delete All</button>
+        <button class="btn_" @click="selectTodo">Select All</button>
+        <button class="btn_" @click="deleteAll">Delete Selected</button>
       </div>
       <div>
-        <button @click="unSelect" class="btn_">unSelect</button>
+        <button @click="unSelect" class="btn_">Unchecked</button>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -52,7 +52,6 @@ const todoList = ref([])
 
 
 
-console.log(todoList);
 const selectedTodos = computed(() => {
   if(todoList.value.length > 0){
     return todoList.value.filter((todo) => todo.learn).length;
@@ -67,7 +66,9 @@ const checkd = ()=>{
     selectedTodos.value = todoList.value.filter((todo) => todo.learn).length;
   } 
 }
-const job = todoList.value - selectedTodos
+const job = computed(() => {
+  return todoList.value.length - selectedTodos.value
+})
 
 
 const createTodos = () => {
@@ -97,6 +98,9 @@ const deleteTodo = (id) => {
     todoList.value.splice(index, 1)
     todoList.value.length
   } 
+  else{
+    alert("Chưa Hoàn thành khóa học")
+  }
 }
 const selectTodo = () => {
   todoList.value.forEach((todo) => {
