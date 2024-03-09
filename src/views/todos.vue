@@ -1,12 +1,17 @@
 <template>
-  <div>
+  <div class="todos">
     <h1 class="text-center">Todos Manage</h1>
     <form class="todos" @submit.prevent="createTodos">
       <input type="text" class="form-control" v-model="getTodos" />
     </form>
     <ul class="todoList">
       <li v-for="todo in todoList" :key="todo.id">
-        <input type="checkbox" :value="todo.id" @click=" todo.learn = !todo.learn" />
+        <input
+          type="checkbox"
+          :value="todo.id"
+          v-model="todo.learn"
+          @click="todo.learn = !todo.learn"
+        />
         <p>{{ todo.name }}</p>
         <div class="delete">
           <button @click="deleteTodo(todo.id)">
@@ -16,7 +21,16 @@
       </li>
     </ul>
     <div class="todoFooter">
-      <p>course {{ todoList.length }}</p>
+      <div>
+        <p>course {{ todoList.length }}</p>
+      </div>
+      <div>
+        <button class="btn" @click="selectTodo">Get All</button>
+        <button class="btn" @click="deleteAll">Delete All</button>
+      </div>
+      <div>
+        <button @click="unSelect" class="btn">unSelect</button>
+      </div>
     </div>
   </div>
 </template>
@@ -29,24 +43,47 @@ let todoId = 1
 
 const todoList = ref([])
 const createTodos = () => {
-  const newTodo = {
-    id: todoId++,
-    name: getTodos.value,
-    learn: false
+  if (getTodos.value != "") {
+    const newTodo = {
+      id: todoId++,
+      name: getTodos.value,
+      learn: false
+    }
+
+    todoList.value.push(newTodo)
+    getTodos.value = ''
   }
-
-  todoList.value.push(newTodo)
-  getTodos.value = ''
+  else{
+    alert("Mời bạn nhập todo")
+  }
 }
-
 
 const deleteTodo = (id) => {
   const index = todoList.value.findIndex((todo) => todo.id === id)
-  if (index !== -1 &&  todoList.value[index].learn === true) {
-        todoList.value.splice(index, 1)
+  if (index !== -1 && todoList.value[index].learn === true) {
+    todoList.value.splice(index, 1)
+  } else {
+    alert('bạn Chưa chọn để xóa')
   }
-  else{
-    alert("bạn Chưa chọn để xóa")
+}
+const selectTodo = () => {
+  todoList.value.forEach((todo) => {
+    todo.learn = true
+  })
+}
+const unSelect = () => {
+  todoList.value.forEach((todo) => {
+    todo.learn = false
+  })
+}
+
+const deleteAll = () => {
+  for (let i = todoList.value.length - 1; i >= 0; i--) {
+    if (todoList.value[i].learn == true) {
+      todoList.value.splice(i, 1)
+    } else {
+      alert(`Bạn chưa chọn  ${todoList.value[i].name} để xóa tất cả`)
+    }
   }
 }
 </script>
@@ -86,5 +123,24 @@ const deleteTodo = (id) => {
 .delete {
   width: 100%;
   position: relative;
+}
+.todoFooter {
+  width: 100%;
+  background-color: rgb(172, 183, 192);
+  display: flex;
+  justify-content: space-between;
+  height: 50px;
+}
+.todoFooter p {
+  line-height: 50px;
+}
+.btn {
+  border: none;
+  background: none;
+  font-weight: 550;
+  margin: 7px 15px;
+}
+.btn:hover {
+  border: solid 1px #333;
 }
 </style>
