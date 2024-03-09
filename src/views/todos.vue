@@ -10,9 +10,15 @@
           type="checkbox"
           :value="todo.id"
           v-model="todo.learn"
-          @click="todo.learn = !todo.learn"
+          @click="checkd"
+          
         />
-        <p>{{ todo.name }}</p>
+        <p :class="{isText: todo.learn}">{{ todo.name }}</p>
+
+   
+        <p v-if="todo.learn"> complete </p>
+        <p v-else> {{ todo.job }} </p>
+
         <div class="delete">
           <button @click="deleteTodo(todo.id)">
             <i class="bx bxs-trash-alt"></i>
@@ -22,49 +28,75 @@
     </ul>
     <div class="todoFooter">
       <div>
-        <p>course {{ todoList.length }}</p>
+        <p class="course" >Course {{selectedTodos}}</p>
+        <p>{{todoList.length}}</p>
+        <p></p>
       </div>
       <div>
-        <button class="btn" @click="selectTodo">Get All</button>
-        <button class="btn" @click="deleteAll">Delete All</button>
+        <button class="btn_" @click="selectTodo">Get All</button>
+        <button class="btn_" @click="deleteAll">Delete All</button>
       </div>
       <div>
-        <button @click="unSelect" class="btn">unSelect</button>
+        <button @click="unSelect" class="btn_">unSelect</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref,computed  } from 'vue'
 
 const getTodos = ref('')
 let todoId = 1
-
 const todoList = ref([])
-const createTodos = () => {
-  if (getTodos.value != "") {
-    const newTodo = {
-      id: todoId++,
-      name: getTodos.value,
-      learn: false
-    }
 
-    todoList.value.push(newTodo)
-    getTodos.value = ''
+
+
+console.log(todoList);
+const selectedTodos = computed(() => {
+  if(todoList.value.length > 0){
+    return todoList.value.filter((todo) => todo.learn).length;
   }
   else{
-    alert("Mời bạn nhập todo")
+    return todoList.value.length
+  }
+});
+
+const checkd = ()=>{
+  if(selectedTodos >0){
+    selectedTodos.value = todoList.value.filter((todo) => todo.learn).length;
+  } 
+}
+const job = todoList.value - selectedTodos
+
+
+const createTodos = () => {
+  if (todoList.value.length < 10) {
+    if (getTodos.value != '') {
+      const newTodo = {
+        id: todoId++,
+        name: getTodos.value,
+        learn: false,
+        job:"unfinished"
+      }
+
+      todoList.value.push(newTodo)
+      getTodos.value = ''
+    } else {
+      alert('Mời bạn nhập công việc')
+    }
+  }
+  else{
+    alert("qua tai")
   }
 }
 
 const deleteTodo = (id) => {
   const index = todoList.value.findIndex((todo) => todo.id === id)
-  if (index !== -1 && todoList.value[index].learn === true) {
+  if (index !== todoList.value.id && todoList.value[index].learn === true) {
     todoList.value.splice(index, 1)
-  } else {
-    alert('bạn Chưa chọn để xóa')
-  }
+    todoList.value.length
+  } 
 }
 const selectTodo = () => {
   todoList.value.forEach((todo) => {
@@ -81,9 +113,7 @@ const deleteAll = () => {
   for (let i = todoList.value.length - 1; i >= 0; i--) {
     if (todoList.value[i].learn == true) {
       todoList.value.splice(i, 1)
-    } else {
-      alert(`Bạn chưa chọn  ${todoList.value[i].name} để xóa tất cả`)
-    }
+    } 
   }
 }
 </script>
@@ -99,6 +129,11 @@ const deleteAll = () => {
   font-style: italic;
   font-family: sans-serif;
   font-weight: 550;
+}
+.course {
+  font-weight: 550;
+  font-size: 1rem;
+  padding: 0 15px;
 }
 
 .todoList li {
@@ -126,7 +161,7 @@ const deleteAll = () => {
 }
 .todoFooter {
   width: 100%;
-  background-color: rgb(172, 183, 192);
+  background-color: rgb(213, 215, 217);
   display: flex;
   justify-content: space-between;
   height: 50px;
@@ -134,13 +169,18 @@ const deleteAll = () => {
 .todoFooter p {
   line-height: 50px;
 }
-.btn {
+.btn_ {
   border: none;
   background: none;
   font-weight: 550;
   margin: 7px 15px;
+  padding: 6px;
 }
-.btn:hover {
-  border: solid 1px #333;
+.btn_:hover{
+  box-shadow: 0 0 3px 1px rgba(31 01 20);
+}
+
+.isText{
+  text-decoration: line-through;
 }
 </style>
